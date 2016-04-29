@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:camel="http://camel.apache.org/schema/blueprint"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:cxf="http://camel.apache.org/schema/blueprint/cxf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd        http://camel.apache.org/schema/blueprint/cxf http://camel.apache.org/schema/blueprint/cxf/camel-cxf.xsd        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+	<bean id="customerServiceImpl" class="com.cox.rest.service.impl.CustomerServiceImpl" />
+	<bean id="kieModelBean" class="com.cox.util.KieModel"
+		destroy-method="cleanUp"></bean>
+	<bean id="bundleDetailsBean" class="com.cox.util.BundleDetails"></bean>
+	<bean id="ruleServiceImpl" class="com.cox.rest.service.impl.RuleServiceImpl">
+		<property name="kieModel" ref="kieModelBean" />
+		<property name="bundleDetails" ref="bundleDetailsBean" />
+	</bean>
+
+	<cxf:rsServer address="http://0.0.0.0:9092/cust" id="customerServiceEndpoint"
+		serviceClass="com.cox.rest.service.CustomerService" />
+
+	<cxf:rsServer address="http://0.0.0.0:9092/rule" id="ruleServiceEndpoint"
+		serviceClass="com.cox.rest.service.RuleService" />
+
+	<camelContext xmlns="http://camel.apache.org/schema/blueprint">
+		<route id="_route1">
+			<from uri="cxfrs:bean:customerServiceEndpoint" />
+			<bean ref="customerServiceImpl" method="getCustomerList" />
+			<log message="${header.operationName}" />
+		</route>
+		<route id="_route2">
+			<from uri="cxfrs:bean:ruleServiceEndpoint" />
+			<bean ref="ruleServiceImpl" method="fireRules" />
+			<log message="${header.operationName}" />
+		</route>
+	</camelContext>
+</blueprint>

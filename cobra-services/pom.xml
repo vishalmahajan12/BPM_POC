@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cox.cobra</groupId>
+		<artifactId>cobra-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+	<artifactId>cobra-services</artifactId>
+	<packaging>bundle</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cox.cobra</groupId>
+			<artifactId>cobra-model</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http4</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-cxf</artifactId>
+			<version>${camel-version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>asm</groupId>
+					<artifactId>asm</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>3.0.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http-jetty</artifactId>
+			<version>3.0.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.kie</groupId>
+			<artifactId>kie-api</artifactId>
+			<version>${jbpm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<defaultGoal>install</defaultGoal>
+
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<includes>
+						<include>com.xav.model:*</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<!-- to generate the MANIFEST-FILE of the bundle -->
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Import-Package>org.drools.core.rule,*</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+
+			<!-- to run the example using mvn camel:run -->
+			<plugin>
+				<groupId>org.apache.camel</groupId>
+				<artifactId>camel-maven-plugin</artifactId>
+				<version>${camel-version}</version>
+				<configuration>
+					<useBlueprint>true</useBlueprint>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
